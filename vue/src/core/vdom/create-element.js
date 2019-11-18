@@ -43,7 +43,6 @@ export function createElement (
   }
   return _createElement(context, tag, data, children, normalizationType)
 }
-
 export function _createElement (
   context: Component,
   tag?: string | Class<Component> | Function | Object,

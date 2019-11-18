@@ -62,23 +62,23 @@ export default ({
   /**
    * Error handler for watcher errors
    */
-  errorHandler: null,
+  errorHandler: null, // 指定组件的渲染和观察期间未捕获错误的处理函数。这个处理函数被调用时，可获取错误信息和 Vue 实例。function (err, vm, info) {} `info` 是 Vue 特定的错误信息，比如错误所在的生命周期钩子
 
   /**
    * Warn handler for watcher warns
    */
-  warnHandler: null,
+  warnHandler: null, // 为 Vue 的运行时警告赋予一个自定义处理函数。注意这只会在开发者环境下生效，在生产环境下它会被忽略 Vue.config.warnHandler = function (msg, vm, trace) { `trace` 是组件的继承关系追踪 }
 
   /**
    * Ignore certain custom elements
    */
-  ignoredElements: [],
+  ignoredElements: [], // 须使 Vue 忽略在 Vue 之外的自定义元素
 
   /**
    * Custom user key aliases for v-on
    */
   // $flow-disable-line
-  keyCodes: Object.create(null),
+  keyCodes: Object.create(null), // 给 v-on 自定义键位别名。Vue.config.keyCodes = {mediaPlayPause: 179} <input type="text" @keyup.media-play-pause="method">
 
   /**
    * Check if a tag is reserved so that it cannot be registered as a

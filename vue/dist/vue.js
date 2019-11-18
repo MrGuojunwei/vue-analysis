@@ -1333,6 +1333,7 @@ var defaultStrat = function (parentVal, childVal) {
 /**
  * Validate component names
  */
+// 校验组件名称是否合法，不合法给出警告
 function checkComponents (options) {
   for (var key in options.components) {
     validateComponentName(key);
@@ -1469,11 +1470,14 @@ function mergeOptions (
   if (extendsFrom) {
     parent = mergeOptions(parent, extendsFrom, vm);
   }
+  // 如果调用Vue构造函数的options中含有mixins属性，则遍历mixins数组，递归调用mergeOptions方法，
+  // 将mixins数组中的对象的属性全部放到parent中，也就是constructor.options={_base, components, directives, filters}
   if (child.mixins) {
     for (var i = 0, l = child.mixins.length; i < l; i++) {
       parent = mergeOptions(parent, child.mixins[i], vm);
     }
   }
+  //  将parent对象中的字段值与strats对象中的字段值进行处理合并 并添加到options对象中
   var options = {};
   var key;
   for (key in parent) {
@@ -1488,6 +1492,7 @@ function mergeOptions (
     var strat = strats[key] || defaultStrat;
     options[key] = strat(parent[key], child[key], vm, key);
   }
+  // 返回处理后的options  其中mounted是一个数组，数组中是mounted函数
   return options
 }
 
@@ -2655,11 +2660,12 @@ function lifecycleMixin (Vue) {
     // based on the rendering backend used.
     if (!prevVnode) {
       // initial render
-      debugger;
       vm.$el = vm.__patch__(vm.$el, vnode, hydrating, false /* removeOnly */);
+      console.log(vm.$el);
     } else {
       // updates
       vm.$el = vm.__patch__(prevVnode, vnode);
+      console.log(vm.$el);
     }
     activeInstance = prevActiveInstance;
     // update __vue__ reference
@@ -4129,6 +4135,7 @@ function mergeProps (to, from) {
 /*  */
 
 // inline hooks to be invoked on component VNodes during patch
+// patch组件的虚拟节点时 会调用内置组件 init , prepatch , insert, destory
 var componentVNodeHooks = {
   init: function init (vnode, hydrating) {
     if (
@@ -4206,11 +4213,11 @@ function createComponent (
     return
   }
 
-  var baseCtor = context.$options._base;
+  var baseCtor = context.$options._base; // 指向Vue函数
 
   // plain options object: turn it into a constructor
   if (isObject(Ctor)) {
-    Ctor = baseCtor.extend(Ctor);
+    Ctor = baseCtor.extend(Ctor); // 调用Vue.extend()会产生一个Vue的子类，Sub函数
   }
 
   // if at this stage it's not a constructor or an async component factory,
@@ -4253,16 +4260,16 @@ function createComponent (
   }
 
   // extract props
-  var propsData = extractPropsFromVNodeData(data, Ctor, tag);
+  var propsData = extractPropsFromVNodeData(data, Ctor, tag); // 提取Props属性
 
-  // functional component
+  // functional component 函数组件
   if (isTrue(Ctor.options.functional)) {
     return createFunctionalComponent(Ctor, propsData, data, context, children)
   }
 
   // extract listeners, since these needs to be treated as
   // child component listeners instead of DOM listeners
-  var listeners = data.on;
+  var listeners = data.on; 
   // replace with listeners with .native modifier
   // so it gets processed during parent component patch.
   data.on = data.nativeOn;
@@ -4280,7 +4287,7 @@ function createComponent (
   }
 
   // install component management hooks onto the placeholder node
-  installComponentHooks(data);
+  installComponentHooks(data); // 合并组件钩子到data.hook对象中，包含init, prepatch, insert, destory等钩子函数
 
   // return a placeholder vnode
   var name = Ctor.options.name || tag;
@@ -4316,6 +4323,7 @@ function createComponentInstanceForVnode (
   return new vnode.componentOptions.Ctor(options)
 }
 
+// 将 init, prepatch, insert, destory等钩子函数合并到data.hook中 
 function installComponentHooks (data) {
   var hooks = data.hook || (data.hook = {});
   for (var i = 0; i < hooksToMerge.length; i++) {
@@ -4376,7 +4384,6 @@ function createElement (
   }
   return _createElement(context, tag, data, children, normalizationType)
 }
-
 function _createElement (
   context,
   tag,
@@ -4600,6 +4607,7 @@ var uid$3 = 0;
 
 function initMixin (Vue) {
   Vue.prototype._init = function (options) {
+    debugger;
     var vm = this;
     // a uid
     vm._uid = uid$3++;
@@ -4616,11 +4624,13 @@ function initMixin (Vue) {
     vm._isVue = true;
     // merge options
     if (options && options._isComponent) {
+      // 组件过程中通过内部调用new vnode.componentOptions.Ctor(options)时
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the
       // internal component options needs special treatment.
       initInternalComponent(vm, options);
     } else {
+      // 手动调用new Vue时触发
       vm.$options = mergeOptions(
         resolveConstructorOptions(vm.constructor),
         options || {},
@@ -5587,8 +5597,8 @@ function createPatchFunction (backend) {
 
       vnode.elm = vnode.ns
         ? nodeOps.createElementNS(vnode.ns, tag)
-        : nodeOps.createElement(tag, vnode);
-      setScope(vnode);
+        : nodeOps.createElement(tag, vnode); // 根据虚拟节点的tag 创建真实节点 并赋值给vnode对象的elm属性
+      setScope(vnode); // ??? 未研究
 
       /* istanbul ignore if */
       {
@@ -6087,7 +6097,7 @@ function createPatchFunction (backend) {
       return node.nodeType === (vnode.isComment ? 8 : 3)
     }
   }
-
+  
   return function patch (oldVnode, vnode, hydrating, removeOnly) {
     if (isUndef(vnode)) {
       if (isDef(oldVnode)) { invokeDestroyHook(oldVnode); }
