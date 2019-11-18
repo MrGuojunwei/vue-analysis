@@ -1,3 +1,9 @@
+/*
+ * @Description: 
+ * @Author: 郭军伟
+ * @Date: 2019-11-06 11:30:45
+ * @lastEditTime: Do not edit
+ */
 /* @flow */
 
 import Vue from 'core/index'
@@ -34,6 +40,7 @@ extend(Vue.options.components, platformComponents)
 Vue.prototype.__patch__ = inBrowser ? patch : noop
 
 // public mount method
+// 此时的el为dom对象，
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean

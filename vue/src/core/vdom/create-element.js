@@ -33,7 +33,7 @@ export function createElement (
   normalizationType: any,
   alwaysNormalize: boolean
 ): VNode | Array<VNode> {
-  if (Array.isArray(data) || isPrimitive(data)) {
+  if (Array.isArray(data) || isPrimitive(data)) { // 参数重载  没有传data参数
     normalizationType = children
     children = data
     data = undefined
@@ -87,16 +87,18 @@ export function _createElement (
     data.scopedSlots = { default: children[0] }
     children.length = 0
   }
-  if (normalizationType === ALWAYS_NORMALIZE) {
+  if (normalizationType === ALWAYS_NORMALIZE) { // 将数组进行扁平化处理
     children = normalizeChildren(children)
   } else if (normalizationType === SIMPLE_NORMALIZE) {
     children = simpleNormalizeChildren(children)
   }
+
+  
   let vnode, ns
   if (typeof tag === 'string') {
     let Ctor
     ns = (context.$vnode && context.$vnode.ns) || config.getTagNamespace(tag)
-    if (config.isReservedTag(tag)) {
+    if (config.isReservedTag(tag)) { // 如果是平台保留标签 比如div
       // platform built-in elements
       vnode = new VNode(
         config.parsePlatformTagName(tag), data, children,
@@ -115,6 +117,7 @@ export function _createElement (
       )
     }
   } else {
+    // tag 为object对象
     // direct component options / constructor
     vnode = createComponent(tag, data, context, children)
   }

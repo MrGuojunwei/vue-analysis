@@ -4750,6 +4750,8 @@ function Vue (options) {
   this._init(options);
 }
 
+window.Vue = Vue;
+
 initMixin(Vue);
 stateMixin(Vue);
 eventsMixin(Vue);
@@ -8060,5 +8062,4 @@ if (inBrowser) {
 }
 
 /*  */
-
 module.exports = Vue;

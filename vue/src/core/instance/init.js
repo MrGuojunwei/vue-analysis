@@ -29,6 +29,8 @@ export function initMixin (Vue: Class<Component>) {
     // a flag to avoid this being observed
     vm._isVue = true
     // merge options
+
+    // 合并开发者传入的options和内置的一些options 并将返回的合并后的options挂载到vm.$options上
     if (options && options._isComponent) {
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the

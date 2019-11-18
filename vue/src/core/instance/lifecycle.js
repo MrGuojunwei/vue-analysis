@@ -130,7 +130,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
     }
   }
 }
-
+// vm vue实例 el要挂载到的dom节点
 export function mountComponent (
   vm: Component,
   el: ?Element,
@@ -157,10 +157,10 @@ export function mountComponent (
       }
     }
   }
-  callHook(vm, 'beforeMount')
+  callHook(vm, 'beforeMount') // 调用钩子函数beforeMount
 
   let updateComponent
-  /* istanbul ignore if */
+  /* istanbul ignore if */ // 定义updateComponent函数
   if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
     updateComponent = () => {
       const name = vm._name
@@ -169,38 +169,38 @@ export function mountComponent (
       const endTag = `vue-perf-end:${id}`
 
       mark(startTag)
-      const vnode = vm._render()
+      const vnode = vm._render()  // 第一步 调用render方法 生成vnode
       mark(endTag)
       measure(`vue ${name} render`, startTag, endTag)
 
       mark(startTag)
-      vm._update(vnode, hydrating)
+      vm._update(vnode, hydrating) // 调用实例的_update函数
       mark(endTag)
       measure(`vue ${name} patch`, startTag, endTag)
     }
   } else {
     updateComponent = () => {
-      vm._update(vm._render(), hydrating)
+      vm._update(vm._render(), hydrating) // _update将vnode渲染成真实的dom
     }
   }
 
   // we set this to vm._watcher inside the watcher's constructor
   // since the watcher's initial patch may call $forceUpdate (e.g. inside child
   // component's mounted hook), which relies on vm._watcher being already defined
-  new Watcher(vm, updateComponent, noop, {
+  new Watcher(vm, updateComponent, noop, { 
     before () {
       if (vm._isMounted) {
-        callHook(vm, 'beforeUpdate')
+        callHook(vm, 'beforeUpdate') // 已挂载  标识更新 调用beforeUpdate钩子函数
       }
     }
-  }, true /* isRenderWatcher */)
+  }, true /* isRenderWatcher */)// 渲染watcher
   hydrating = false
 
   // manually mounted instance, call mounted on self
   // mounted is called for render-created child components in its inserted hook
-  if (vm.$vnode == null) {
+  if (vm.$vnode == null) { // 挂载成功   vm.$vnode 表示父虚拟节点  为null  表示根节点
     vm._isMounted = true
-    callHook(vm, 'mounted')
+    callHook(vm, 'mounted') // 调用mounted钩子函数
   }
   return vm
 }
@@ -314,7 +314,7 @@ export function deactivateChildComponent (vm: Component, direct?: boolean) {
 
 export function callHook (vm: Component, hook: string) {
   // #7573 disable dep collection when invoking lifecycle hooks
-  pushTarget()
+  pushTarget() // ???
   const handlers = vm.$options[hook]
   if (handlers) {
     for (let i = 0, j = handlers.length; i < j; i++) {
@@ -328,5 +328,5 @@ export function callHook (vm: Component, hook: string) {
   if (vm._hasHookEvent) {
     vm.$emit('hook:' + hook)
   }
-  popTarget()
+  popTarget() // ???
 }

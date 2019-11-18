@@ -13,8 +13,8 @@ const idToTemplate = cached(id => {
   const el = query(id)
   return el && el.innerHTML
 })
-
-const mount = Vue.prototype.$mount
+// 保留原型上的mount方法
+const mount = Vue.prototype.$mount 
 Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
@@ -33,6 +33,7 @@ Vue.prototype.$mount = function (
   // resolve template/el and convert to render function
   if (!options.render) {
     let template = options.template
+    // 处理options.template的值
     if (template) {
       if (typeof template === 'string') {
         if (template.charAt(0) === '#') {
@@ -56,12 +57,13 @@ Vue.prototype.$mount = function (
     } else if (el) {
       template = getOuterHTML(el)
     }
+    // 编译相关的
     if (template) {
       /* istanbul ignore if */
       if (process.env.NODE_ENV !== 'production' && config.performance && mark) {
         mark('compile')
       }
-
+      // 处理template后，调用compileToFunctions()方法，生成render和staticRenderFns两个方法
       const { render, staticRenderFns } = compileToFunctions(template, {
         shouldDecodeNewlines,
         shouldDecodeNewlinesForHref,
@@ -78,6 +80,7 @@ Vue.prototype.$mount = function (
       }
     }
   }
+  // 此时 已经保证拥有了render方法，可能是用户传入的render方法，也可能是vue处理生成的render方法。
   return mount.call(this, el, hydrating)
 }
 

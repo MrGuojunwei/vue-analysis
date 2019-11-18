@@ -10612,6 +10612,7 @@ const createCompiler = createCompilerCreator(function baseCompile (
   options
 ) {
   const ast = parse(template.trim(), options);
+  console.log(ast);
   optimize(ast, options);
   const code = generate(ast, options);
   return {
