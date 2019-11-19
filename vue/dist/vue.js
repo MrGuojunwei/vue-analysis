@@ -1513,11 +1513,11 @@ function resolveAsset (
   }
   var assets = options[type];
   // check local registration variations first
-  if (hasOwn(assets, id)) { return assets[id] }
-  var camelizedId = camelize(id);
+  if (hasOwn(assets, id)) { return assets[id] } // 通过id查找组件构造函数, 找到后返回
+  var camelizedId = camelize(id); // 没找到，把id变成驼峰式再次查找，找到后返回
   if (hasOwn(assets, camelizedId)) { return assets[camelizedId] }
-  var PascalCaseId = capitalize(camelizedId);
-  if (hasOwn(assets, PascalCaseId)) { return assets[PascalCaseId] }
+  var PascalCaseId = capitalize(camelizedId); // 还没找到 把驼峰式的id首字母大写再次查找  
+  if (hasOwn(assets, PascalCaseId)) { return assets[PascalCaseId] } // 找到后返回
   // fallback to prototype chain
   var res = assets[id] || assets[camelizedId] || assets[PascalCaseId];
   if ("development" !== 'production' && warnMissing && !res) {
@@ -2695,7 +2695,7 @@ function lifecycleMixin (Vue) {
     if (vm._isBeingDestroyed) {
       return
     }
-    callHook(vm, 'beforeDestroy');
+    callHook(vm, 'beforeDestroy'); // 执行beforeDestory钩子函数
     vm._isBeingDestroyed = true;
     // remove self from parent
     var parent = vm.$parent;
@@ -2720,7 +2720,7 @@ function lifecycleMixin (Vue) {
     // invoke destroy hooks on current rendered tree
     vm.__patch__(vm._vnode, null);
     // fire destroyed hook
-    callHook(vm, 'destroyed');
+    callHook(vm, 'destroyed'); // 执行destoryed钩子函数
     // turn off all instance listeners.
     vm.$off();
     // remove __vue__ reference
@@ -2760,7 +2760,7 @@ function mountComponent (
       }
     }
   }
-  callHook(vm, 'beforeMount');
+  callHook(vm, 'beforeMount'); // 调用beforeMount钩子函数
 
   var updateComponent;
   /* istanbul ignore if */
@@ -2803,7 +2803,7 @@ function mountComponent (
   // mounted is called for render-created child components in its inserted hook
   if (vm.$vnode == null) {
     vm._isMounted = true;
-    callHook(vm, 'mounted');
+    callHook(vm, 'mounted'); //调用mounted钩子函数
   }
   return vm
 }
@@ -4202,6 +4202,7 @@ var componentVNodeHooks = {
 
 var hooksToMerge = Object.keys(componentVNodeHooks);
 
+// 创建组件
 function createComponent (
   Ctor,
   data,
@@ -4229,8 +4230,10 @@ function createComponent (
     return
   }
 
-  // async component
+  // async component 处理异步组件的逻辑
+  
   var asyncFactory;
+  // 由于我们这个时候传入的 Ctor 是一个函数，那么它也并不会执行 Vue.extend 逻辑，因此它的 cid 是 undefiend
   if (isUndef(Ctor.cid)) {
     asyncFactory = Ctor;
     Ctor = resolveAsyncComponent(asyncFactory, baseCtor, context);
@@ -4607,7 +4610,6 @@ var uid$3 = 0;
 
 function initMixin (Vue) {
   Vue.prototype._init = function (options) {
-    debugger;
     var vm = this;
     // a uid
     vm._uid = uid$3++;
@@ -4646,11 +4648,11 @@ function initMixin (Vue) {
     initLifecycle(vm);
     initEvents(vm);
     initRender(vm);
-    callHook(vm, 'beforeCreate');
+    callHook(vm, 'beforeCreate'); // 调用beforeCreate钩子函数
     initInjections(vm); // resolve injections before data/props
     initState(vm);
     initProvide(vm); // resolve provide after data/props
-    callHook(vm, 'created');
+    callHook(vm, 'created'); // 调用created钩子函数
 
     /* istanbul ignore if */
     if ("development" !== 'production' && config.performance && mark) {
@@ -4880,7 +4882,11 @@ function initComputed$1 (Comp) {
 }
 
 /*  */
-
+/**
+ * 注意，局部注册和全局注册不同的是，只有该类型的组件才可以访问局部注册的子组件，而全局注册是扩展到 Vue.options 下，
+ * 所以在所有组件创建的过程中，都会从全局的 Vue.options.components 扩展到当前组件的 vm.$options.components 下，
+ * 这就是全局注册的组件能被任意使用的原因
+ */
 function initAssetRegisters (Vue) {
   /**
    * Create asset registration methods.
@@ -4890,21 +4896,21 @@ function initAssetRegisters (Vue) {
       id,
       definition
     ) {
-      if (!definition) {
+      if (!definition) { // 如果没有definition 说明获取组件
         return this.options[type + 's'][id]
       } else {
         /* istanbul ignore if */
         if ("development" !== 'production' && type === 'component') {
-          validateComponentName(id);
+          validateComponentName(id); // 校验组件名
         }
         if (type === 'component' && isPlainObject(definition)) {
-          definition.name = definition.name || id;
-          definition = this.options._base.extend(definition);
+          definition.name = definition.name || id; // 组件名优先取自definition中的name值
+          definition = this.options._base.extend(definition); // 返回一个子类的构造函数VueComponent
         }
         if (type === 'directive' && typeof definition === 'function') {
           definition = { bind: definition, update: definition };
         }
-        this.options[type + 's'][id] = definition;
+        this.options[type + 's'][id] = definition; // 将definition组件添加到Vue.options.components对象中
         return definition
       }
     };
