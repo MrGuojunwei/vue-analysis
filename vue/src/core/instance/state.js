@@ -63,12 +63,13 @@ export function initState (vm: Component) {
 
 function initProps (vm: Component, propsOptions: Object) {
   const propsData = vm.$options.propsData || {}
-  const props = vm._props = {}
-  // cache prop keys so that future props updates can iterate using Array
-  // instead of dynamic object key enumeration.
-  const keys = vm.$options._propKeys = []
-  const isRoot = !vm.$parent
+  const props = vm._props = {} // 向实例对象上挂载_props对象
+  // cache prop keys so that future props updates can iterate using Array instead of dynamic object key enumeration.
+  // 缓存属性键，以便将来的属性更新可以使用数组而不是动态对象键枚举进行迭代
+  const keys = vm.$options._propKeys = [] // 向vm.$options对象上挂载_propKeys数组  主要保存propsOptions对象的key
+  const isRoot = !vm.$parent // 是否是根实例
   // root instance props should be converted
+  // 根实例props应该被转换  根实例的props数据不应该被监测
   if (!isRoot) {
     toggleObserving(false)
   }

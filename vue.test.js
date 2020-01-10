@@ -11,8 +11,16 @@ Vue.component('HelloWorld', {
             msg: 'Hello world!'
         }
     },
-    mounted () {
-        console.log('hello world组件的钩子函数出发了')
+    props: {
+        propsChild: {
+            type: Boolean,
+            default: true
+        }
+    },
+    inject: ['parent'],
+    mounted() {
+        console.log('hello world组件的钩子函数出发了');
+        console.log(this.parent);
     }
 })
 
@@ -28,25 +36,32 @@ const HelloWorld = Vue.component('HelloWorld');
 // });
 
 // new Hello().$mount('#app')
-
+debugger;
 new Vue({
-    data() {
-        return {
-            user: {
-                name: '郭军伟',
-                age: 26
-            }
+    el: "#app",
+    data: {
+        user: {
+            name: '郭军伟',
+            age: 26
         }
     },
-    components: {
-        HelloWorld
+    provide: {
+        parent: 'parent'
+    },
+    computed: {
+        newName() {
+            return 'computed' + this.user.name;
+        }
     },
     methods: {
         changeName() {
             this.user.name = 'guojunwei'
         }
     },
-    mounted () {
-        console.log('根Vue的mounted钩子函数');
+    created() {
+        console.log('created')
+    },
+    mounted() {
+        console.log('mounted');
     }
-}).$mount('#app')
+})

@@ -1,0 +1,73 @@
+<!--
+ * @Description: 
+ * @Author: 郭军伟
+ * @Date: 2019-11-21 17:20:13
+ * @lastEditTime: Do not edit
+ -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>transition</title>
+  </head>
+  <body>
+    <script>
+      var data = [
+        [1, 1, 1, 1, 0],
+        [1, 1, 0, 1, 0],
+        [1, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0]
+      ];
+
+      var data2 = [
+        [1, 1, 0, 0, 0],
+        [1, 1, 0, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 0, 1, 1]
+      ];
+
+      var numIslands = function(grid) {
+        if (grid == null || grid.length == 0 || grid[0].length == 0) {
+          return 0;
+        }
+        //获取grid的长度作为行,grid[0]的长度作为列
+        var rows = grid.length;
+        var cols = grid[0].length;
+        var c = 0;
+        for (var i = 0; i < rows; i++) {
+          for (var k = 0; k < cols; k++) {
+            //如果当前的坐标为1时,开始向四个方向进行搜索,
+            if (grid[i][k] == "1") {
+              c++;
+              doSearch(grid, i, k, rows, cols);
+            }
+          }
+        }
+        return c;
+      };
+
+      function doSearch(grid, i, k, rows, cols) {
+        if (i < 0 || i >= rows || k < 0 || k >= cols) {
+          return;
+        }
+        if (grid[i][k] != "1") {
+          return;
+        }
+        grid[i][k] = "0";
+        //进行上下左右搜索
+        doSearch(grid, i + 1, k, rows, cols);
+        doSearch(grid, i - 1, k, rows, cols);
+        doSearch(grid, i, k + 1, rows, cols);
+        doSearch(grid, i, k - 1, rows, cols);
+      }
+      console.time("data");
+      numIslands(data);
+      console.timeEnd("data");
+      console.time("data2");
+      numIslands(data2);
+      console.timeEnd("data2");
+    </script>
+  </body>
+</html>

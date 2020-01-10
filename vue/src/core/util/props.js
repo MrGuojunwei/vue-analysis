@@ -29,8 +29,9 @@ export function validateProp (
   let value = propsData[key]
   // boolean casting
   const booleanIndex = getTypeIndex(Boolean, prop.type)
+  // 处理布尔类型的数据  
   if (booleanIndex > -1) {
-    if (absent && !hasOwn(prop, 'default')) {
+    if (absent && !hasOwn(prop, 'default')) { // 没有写默认值  默认为false
       value = false
     } else if (value === '' || value === hyphenate(key)) {
       // only cast empty string / same name to boolean if
@@ -189,6 +190,13 @@ function isSameType (a, b) {
   return getType(a) === getType(b)
 }
 
+/**
+ * @description 获取type 在 expectedTypes的索引返回索引值 
+ * 1、expectedTypes是数组 查找到返回索引 找不到返回-1
+ * 2、expectedTypes不是数组 判断type 和 expectedTypes是否是同类型的  如果是 返回0  如果不是返回-1
+ * @param {*} type 
+ * @param {*} expectedTypes 
+ */
 function getTypeIndex (type, expectedTypes): number {
   if (!Array.isArray(expectedTypes)) {
     return isSameType(expectedTypes, type) ? 0 : -1
