@@ -20,6 +20,9 @@
             <div>{{user.name}}</div>
             <div>{{user.age}}</div>
         </div>
+        <ul v-for='item in list'>
+            <li>{{item}}</li>
+        </ul>
         <button @click="changeName">修改名字</button>
         <hello-world :propChild="false"></hello-world>
     </div>

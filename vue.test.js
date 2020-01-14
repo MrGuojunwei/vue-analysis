@@ -43,7 +43,12 @@ new Vue({
         user: {
             name: '郭军伟',
             age: 26
-        }
+        },
+        list: [
+            'apple',
+            'banana',
+            'orenge'
+        ]
     },
     provide: {
         parent: 'parent'
