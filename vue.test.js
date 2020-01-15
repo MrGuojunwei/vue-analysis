@@ -36,7 +36,6 @@ const HelloWorld = Vue.component('HelloWorld');
 // });
 
 // new Hello().$mount('#app')
-debugger;
 new Vue({
     el: "#app",
     data: {
@@ -48,7 +47,8 @@ new Vue({
             'apple',
             'banana',
             'orenge'
-        ]
+        ],
+        show: 'elseif'
     },
     provide: {
         parent: 'parent'

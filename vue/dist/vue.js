@@ -9156,10 +9156,12 @@
   /**
    * Convert HTML string to AST.
    */
+  
   function parse(
     template,
     options
   ) {
+    debugger;
     warn$2 = options.warn || baseWarn;
 
     platformIsPreTag = options.isPreTag || no;
@@ -9986,7 +9988,7 @@
       } else {
         node.staticRoot = false;
       }
-      // 循环处理标记其子节点是否时静态根节点
+      // 循环处理标记其子节点是否是静态根节点
       if (node.children) {
         for (var i = 0, l = node.children.length; i < l; i++) {
           markStaticRoots(node.children[i], isInFor || !!node.for);
@@ -10220,7 +10222,7 @@
     ast,
     options
   ) {
-    var state = new CodegenState(options); // { options, warn, transforms, dataGenFns, directiives, isReservedTag, maybeComponent, onceId, staticRenderFns}
+    var state = new CodegenState(options); // { options: options, warn: options.warn, transforms: array<function>, dataGenFns: array<function>, directiives: {}, maybeComponent: function, onceId: 0, staticRenderFns: []}
     var code = ast ? genElement(ast, state) : '_c("div")'; // 
     return {
       render: ("with(this){return " + code + "}"),

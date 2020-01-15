@@ -23,6 +23,9 @@
         <ul v-for='item in list'>
             <li>{{item}}</li>
         </ul>
+        <div v-if="show === 'if'">if</div>
+        <div v-else-if="show === 'elseif'">elseif</div>
+        <div v-else>else</div>
         <button @click="changeName">修改名字</button>
         <hello-world :propChild="false"></hello-world>
     </div>
