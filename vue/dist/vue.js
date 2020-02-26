@@ -12,22 +12,27 @@
 
   /*  */
 
+  // 创建空对象
   var emptyObject = Object.freeze({});
 
   // these helpers produces better vm code in JS engines due to their
   // explicitness and function inlining
+  // 判断一个变量是否未定义过
   function isUndef(v) {
     return v === undefined || v === null
   }
 
+  // 判断一个变量是否定义过
   function isDef(v) {
     return v !== undefined && v !== null
   }
 
+  // 判断一个变量是否未true
   function isTrue(v) {
     return v === true
   }
 
+  // 判断一个变量是否未false
   function isFalse(v) {
     return v === false
   }
@@ -35,6 +40,7 @@
   /**
    * Check if value is primitive
    */
+  // 判断一个变量是否是基本类型
   function isPrimitive(value) {
     return (
       typeof value === 'string' ||
@@ -50,6 +56,7 @@
    * Objects from primitive values when we know the value
    * is a JSON-compliant type.
    */
+  // 判断一个变量是否是对象且不为null
   function isObject(obj) {
     return obj !== null && typeof obj === 'object'
   }
@@ -59,6 +66,7 @@
    */
   var _toString = Object.prototype.toString;
 
+  // 获取一个变量的具体类型
   function toRawType(value) {
     return _toString.call(value).slice(8, -1)
   }
@@ -67,19 +75,24 @@
    * Strict object type check. Only returns true
    * for plain JavaScript objects.
    */
+  // 判断一个变量是否是真正的对象
   function isPlainObject(obj) {
     return _toString.call(obj) === '[object Object]'
   }
-
+  // 判断变量是否是正则表达式类型
   function isRegExp(v) {
     return _toString.call(v) === '[object RegExp]'
   }
 
   /**
    * Check if val is a valid array index.
+   * 检测变量是否是有效的数组索引
    */
   function isValidArrayIndex(val) {
+    // isFinite 检测是否是数据
+    // Math.floor 向下取整
     var n = parseFloat(String(val));
+    // isFinite 如果 n是有效数字（或可转换未有效数字），那么返回true，否则，如果number是NaN（非数字），或者是正、负无穷大的数，则返回false
     return n >= 0 && Math.floor(n) === n && isFinite(val)
   }
 
@@ -87,6 +100,7 @@
    * Convert a value to a string that is actually rendered.
    */
   function toString(val) {
+    // 将对象或者其他基本数据 变成一个字符串
     return val == null
       ? ''
       : typeof val === 'object'
@@ -99,6 +113,7 @@
    * If the conversion fails, return original string.
    */
   function toNumber(val) {
+    // 字符串转数字，如果失败则返回字符串
     var n = parseFloat(val);
     return isNaN(n) ? val : n
   }
@@ -3993,21 +4008,21 @@
   /*  */
 
   function installRenderHelpers(target) {
-    target._o = markOnce;
-    target._n = toNumber;
-    target._s = toString;
-    target._l = renderList;
-    target._t = renderSlot;
-    target._q = looseEqual;
-    target._i = looseIndexOf;
-    target._m = renderStatic;
-    target._f = resolveFilter;
-    target._k = checkKeyCodes;
-    target._b = bindObjectProps;
-    target._v = createTextVNode;
-    target._e = createEmptyVNode;
-    target._u = resolveScopedSlots;
-    target._g = bindObjectListeners;
+    target._o = markOnce; //实际上，这意味着使用唯一键将节点标记为静态。* 标志 v-once. 指令
+    target._n = toNumber; //字符串转数字，如果失败则返回字符串
+    target._s = toString; // 将对象或者其他基本数据 变成一个 字符串
+    target._l = renderList; //根据value 判断是数字，数组，对象，字符串，循环渲染
+    target._t = renderSlot; //用于呈现<slot>的运行时帮助程序 创建虚拟slot vonde
+    target._q = looseEqual; //检测a和b的数据类型，是否是不是数组或者对象，对象的key长度一样即可，数组长度一样即可
+    target._i = looseIndexOf; //或者 arr数组中的对象，或者对象数组 是否和val 相等
+    target._m = renderStatic;//用于呈现静态树的运行时助手。 创建静态虚拟vnode
+    target._f = resolveFilter; // 用于解析过滤器的运行时助手
+    target._k = checkKeyCodes; // 检查两个key是否相等，如果不想等返回true 如果相等返回false
+    target._b = bindObjectProps; //用于将v-bind="object"合并到VNode的数据中的运行时助手。  检查value 是否是对象，并且为value 添加update 事件
+    target._v = createTextVNode; //创建一个文本节点 vonde
+    target._e = createEmptyVNode;  // 创建一个节点 为注释节点 空的vnode
+    target._u = resolveScopedSlots; //  解决范围槽 把对象数组事件分解成 对象
+    target._g = bindObjectListeners; //判断value 是否是对象，并且为数据 data.on 合并data和value 的on 事件
   }
 
   /*  */
@@ -8858,60 +8873,60 @@
     return value.replace(re, function (match) { return decodingMap[match]; })
   }
 
-  function parseHTML(html, options) {
-    var stack = [];
-    var expectHTML = options.expectHTML;
-    var isUnaryTag$$1 = options.isUnaryTag || no;
-    var canBeLeftOpenTag$$1 = options.canBeLeftOpenTag || no;
+  function parseHTML(html, options) { // html模板字符串 options选项
+    var stack = []; // 节点标签堆栈 
+    var expectHTML = options.expectHTML; // true
+    var isUnaryTag$$1 = options.isUnaryTag || no; //函数  匹配标签是否是 'area,base,br,col,embed,frame,hr,img,input,isindex,keygen, link,meta,param,source,track,wbr'
+    var canBeLeftOpenTag$$1 = options.canBeLeftOpenTag || no;  //函数 //判断标签是否是 'colgroup,dd,dt,li,options,p,td,tfoot,th,thead,tr,source'
     var index = 0;
     var last, lastTag;
-    while (html) {
+    while (html) { //  循环html
       last = html;
-      // Make sure we're not in a plaintext content element like script/style // 确保我们不是在解析一个普通文本内容标签 比如scripts/style
-      if (!lastTag || !isPlainTextElement(lastTag)) {
-        var textEnd = html.indexOf('<'); // 找到 < 字符所在索引
+      // Make sure we're not in a plaintext content element like script/style // 确保我们不是在解析一个普通文本内容标签 比如scripts/style/textarea
+      if (!lastTag || !isPlainTextElement(lastTag)) { // lastTag不存在 或者  标签不是script style textarea等标签
+        var textEnd = html.indexOf('<'); // 找到 < 字符所在索引 匹配开始标签 或注释标签 或条件注释 或结束标签
         if (textEnd === 0) { // 如果开头是 < 字符
           // Comment:
-          if (comment.test(html)) { // 处理注释文本
-            var commentEnd = html.indexOf('-->'); // 找到注释结束符所在位置
+          if (comment.test(html)) { // 匹配 开始字符串为<!--任何字符串,注释标签  如果匹配上
+            var commentEnd = html.indexOf('-->'); // 获取注释标签的结束位置
 
-            if (commentEnd >= 0) { // 索引值>=0 
+            if (commentEnd >= 0) { // //如果注释标签结束标签位置大于0，则有注释内容
               if (options.shouldKeepComment) { // 判断shouleKeepComment的值 为true 则截取注释内容，并添加到ast上
-                options.comment(html.substring(4, commentEnd));
+                options.comment(html.substring(4, commentEnd)); // 往currentParent.children中添加type: 3的注释子节点
               }
-              advance(commentEnd + 3); // 继续向前，步进注释长度
+              advance(commentEnd + 3); // 继续向前，跳过注释结束符 -->
               continue
             }
           }
 
           // http://en.wikipedia.org/wiki/Conditional_comment#Downlevel-revealed_conditional_comment
-          if (conditionalComment.test(html)) { // 处理条件注释
-            var conditionalEnd = html.indexOf(']>');
+          if (conditionalComment.test(html)) { // 匹配条件注释
+            var conditionalEnd = html.indexOf(']>'); // 获取条件注释的结束位置
 
-            if (conditionalEnd >= 0) { // 找到条件注释的结束索引 不做处理 略过条件注释 继续步进解析
+            if (conditionalEnd >= 0) { // 如果条件注释的结束位置 >= 0 跳过条件注释  继续解析
               advance(conditionalEnd + 2);
               continue
             }
           }
 
           // Doctype:
-          var doctypeMatch = html.match(doctype); // 处理文档文本
-          if (doctypeMatch) {
+          var doctypeMatch = html.match(doctype); //匹配html的头文件 <!DOCTYPE html>
+          if (doctypeMatch) { // 如果匹配到 跳过匹配的内容 继续解析
             advance(doctypeMatch[0].length); // 步进doctype字符的长度
             continue
           }
 
           // End tag:
-          var endTagMatch = html.match(endTag); // 匹配是否是结束标签
-          if (endTagMatch) { // 如果是结束标签
-            var curIndex = index; // 记录当前解析到的索引值
-            advance(endTagMatch[0].length);
-            parseEndTag(endTagMatch[1], curIndex, index);
+          var endTagMatch = html.match(endTag); // 匹配结束标签
+          if (endTagMatch) { // 如果匹配上结束标签
+            var curIndex = index; // 记录当前解析到的位置
+            advance(endTagMatch[0].length); // 跳过结束标签 并修改index的值
+            parseEndTag(endTagMatch[1], curIndex, index); // 解析结束标签
             continue
           }
 
           // Start tag:
-          var startTagMatch = parseStartTag(); // 解析开始标签
+          var startTagMatch = parseStartTag(); // 解析开始标签  返回一个对象{tagName, attrs: [], start: }
           if (startTagMatch) {
             handleStartTag(startTagMatch); // 处理开始标签
             if (shouldIgnoreFirstNewline(lastTag, html)) { // 是否过滤换行标签 \n
@@ -8945,7 +8960,7 @@
           html = '';
         }
 
-        if (options.chars && text) {
+        if (options.chars && text) { // 处理文本类
           options.chars(text);
         }
       } else {
@@ -9012,7 +9027,7 @@
       }
     }
 
-    function handleStartTag(match) { // 该方法主要判断处理开始标签上的属性 保存在attrs数组中，判断是否是自闭标签，如果不是则把当前标签放入stack栈中 并保存lastTag值为栈顶的标签名
+    function handleStartTag(match) { // 该方法主要判断处理开始标签上的属性 保存在attrs数组中，判断是否是自闭标签，如果不是则把当前标签放入stack栈中 并保存lastTag值为栈顶的标签名  最后执行options.start方法
       var tagName = match.tagName;
       var unarySlash = match.unarySlash;
 
@@ -9057,23 +9072,23 @@
       }
     }
 
-    function parseEndTag(tagName, start, end) {
-      var pos, lowerCasedTagName;
-      if (start == null) { start = index; }
-      if (end == null) { end = index; }
+    function parseEndTag(tagName, start, end) { // tagName标签名称 start结束标签开始位置  end结束标签结束位置
+      var pos, lowerCasedTagName; // 小写的标签名
+      if (start == null) { start = index; } // start 如果没有传开始位置，就使用index
+      if (end == null) { end = index; } // 如果没有传结束位置，就是用index
 
       if (tagName) {
-        lowerCasedTagName = tagName.toLowerCase();
+        lowerCasedTagName = tagName.toLowerCase(); // 将标签名转化为小写形式
       }
 
       // Find the closest opened tag of the same type
-      if (tagName) {
+      if (tagName) { // 从标签栈顶开始遍历：找到与传入的标签名向匹配的开始标签的位置  并将位置索引赋值给pos变量 
         for (pos = stack.length - 1; pos >= 0; pos--) {
           if (stack[pos].lowerCasedTag === lowerCasedTagName) {
             break
           }
         }
-      } else {
+      } else { // 如果没找到 pos赋值为0
         // If no tag name is provided, clean shop
         pos = 0;
       }
@@ -9085,27 +9100,33 @@
             (i > pos || !tagName) &&
             options.warn
           ) {
-            options.warn(
+            options.warn( // 正常情况下  结束标签应该是与栈尾的开始标签是对应的  如果结束标签与非栈尾的开始标签对应上  说明存在 少写 结束标签了  就报警告
               ("tag <" + (stack[i].tag) + "> has no matching end tag.")
             );
           }
-          if (options.end) {
+          if (options.end) { // 执行end钩子  其实就是将stack栈中 pos位置及之后的开始标签从stack栈中移除 并将stack栈尾的元素赋值给currentParent
             options.end(stack[i].tag, start, end);
           }
         }
 
-        // Remove the open elements from the stack // 从stack栈中移除开始标签
-        stack.length = pos; // 
-        lastTag = pos && stack[pos - 1].tag;
-      } else if (lowerCasedTagName === 'br') { // 对br标签特殊处理
-        if (options.start) {
+        // Remove the open elements from the stack
+        stack.length = pos; // 从stack栈中移除开始标签
+        lastTag = pos && stack[pos - 1].tag; // lastTag 保存stack栈尾元素的标签
+      } else if (lowerCasedTagName === 'br') { // 对br标签特殊处理 html中 <br> Xhtml中 <br />
+        if (options.start) { // 如果是br标签  进行特殊处理
+          //标签开始函数， 创建一个ast标签dom，  判断获取v-for属性是否存在如果有则转义 v-for指令 把for，alias，iterator1，iterator2属性添加到虚拟dom中
+          //获取v-if属性，为el虚拟dom添加 v-if，v-eles，v-else-if 属性
+          //获取v-once 指令属性，如果有有该属性 为虚拟dom标签 标记事件 只触发一次则销毁
+          //校验属性的值，为el添加muted， events，nativeEvents，directives，  key， ref，slotName或者slotScope或者slot，component或者inlineTemplate 标志 属性
+          // 标志当前的currentParent当前的 element
+          //为parse函数 stack标签堆栈 添加一个标签
           options.start(tagName, [], true, start, end);
         }
       } else if (lowerCasedTagName === 'p') { // 对p标签特殊处理
         if (options.start) {
           options.start(tagName, [], false, start, end);
         }
-        if (options.end) {
+        if (options.end) { // 执行end钩子  其实就是将stack栈中 pos位置及之后的开始标签从stack栈中移除 并将stack栈尾的元素赋值给currentParent
           options.end(tagName, start, end);
         }
       }
@@ -9156,12 +9177,11 @@
   /**
    * Convert HTML string to AST.
    */
-  
+
   function parse(
     template,
     options
   ) {
-    debugger;
     warn$2 = options.warn || baseWarn;
 
     platformIsPreTag = options.isPreTag || no;
@@ -9212,6 +9232,13 @@
       shouldDecodeNewlinesForHref: options.shouldDecodeNewlinesForHref,
       shouldKeepComment: options.comments,
       start: function start(tag, attrs, unary) {
+        //标签开始函数， 创建一个ast标签dom，  判断获取v-for属性是否存在如果有则转义 v-for指令 把for，alias，iterator1，iterator2属性添加到虚拟dom中
+        //获取v-if属性，为el虚拟dom添加 v-if，v-eles，v-else-if 属性
+        //获取v-once 指令属性，如果有有该属性 为虚拟dom标签 标记事件 只触发一次则销毁
+        //校验属性的值，为el添加muted， events，nativeEvents，directives，  key， ref，slotName或者slotScope或者slot，component或者inlineTemplate 标志 属性
+        // 标志当前的currentParent当前的 element
+        //为parse函数 stack标签堆栈 添加一个标签
+
         // check namespace.
         // inherit parent ns if there is one
         var ns = (currentParent && currentParent.ns) || platformGetTagNamespace(tag);
@@ -9932,9 +9959,9 @@
   }
 
   function markStatic$1(node) {
-// vue 判断一个节点是不是静态节点的做法其实并不难：
-//    先根据自身是不是静态节点做一个标记 node.static = isStatic(node)
-//    然后在循环 children，如果 children 中出现了哪怕一个节点不是静态节点，在将当前节点的标记修改成 false： node.static = false。
+    // vue 判断一个节点是不是静态节点的做法其实并不难：
+    //    先根据自身是不是静态节点做一个标记 node.static = isStatic(node)
+    //    然后在循环 children，如果 children 中出现了哪怕一个节点不是静态节点，在将当前节点的标记修改成 false： node.static = false。
     node.static = isStatic(node); // 判断自身节点是否是静态节点
     if (node.type === 1) { // type为1 元素节点
       // do not make component slot content static. this avoids

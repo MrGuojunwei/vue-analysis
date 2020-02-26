@@ -36,6 +36,7 @@ const HelloWorld = Vue.component('HelloWorld');
 // });
 
 // new Hello().$mount('#app')
+debugger;
 new Vue({
     el: "#app",
     data: {
@@ -60,7 +61,8 @@ new Vue({
     },
     methods: {
         changeName() {
-            this.user.name = 'guojunwei'
+            // this.user.name = 'guojunwei'
+            this.$data.user.grade = 'guojunwei222';
         }
     },
     created() {
